@@ -1,22 +1,36 @@
 {
   lib,
   stdenvNoCC,
-  fetchzip,
+  fetchurl,
+  undmg,
 }:
 
+let
+  app_url = "https://github.com/openclaw/openclaw/releases/download/v2026.5.2/OpenClaw-2026.5.2.dmg";
+  app_hash = "sha256-lH06NxMmwc53GB1N28Pjx+p5cDMUDY5f//bp2YO2urc=";
+in
 stdenvNoCC.mkDerivation {
   pname = "openclaw-app";
   version = "2026.5.2";
 
-  src = fetchzip {
-    url = "https://github.com/openclaw/openclaw/releases/download/v2026.5.2/OpenClaw-2026.5.2.zip";
-    hash = "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=";
-    stripRoot = false;
+  src = fetchurl {
+    url = app_url;
+    hash = app_hash;
   };
 
-  dontUnpack = true;
+  nativeBuildInputs = [ undmg ];
 
-  installPhase = "${../scripts/openclaw-app-install.sh}";
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out/Applications"
+    app_path="$(find . -maxdepth 3 -name '*.app' -print -quit)"
+    if [ -z "$app_path" ]; then
+      echo "OpenClaw.app not found in DMG" >&2
+      exit 1
+    fi
+    cp -R "$app_path" "$out/Applications/OpenClaw.app"
+    runHook postInstall
+  '';
 
   meta = with lib; {
     description = "OpenClaw macOS app bundle";

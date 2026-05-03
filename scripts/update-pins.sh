@@ -61,16 +61,25 @@ prefetch_json() {
   nix --extra-experimental-features "nix-command flakes" store prefetch-file --unpack --json "$url"
 }
 
-unpacked_zip_hash() {
+app_asset_hash() {
   local url="$1"
-  local archive_path unpack_dir
+  local archive_path
 
-  archive_path=$(nix-prefetch-url "$url" | tail -n 1)
-  archive_path="/nix/store/${archive_path}-$(basename "$url")"
-  unpack_dir=$(mktemp -d)
-  unzip -q "$archive_path" -d "$unpack_dir"
-  nix hash path "$unpack_dir"
-  rm -rf "$unpack_dir"
+  if [[ "$url" == *.dmg ]]; then
+    # DMG: just use the flat fetch hash
+    local nar_hash
+    nar_hash=$(nix-prefetch-url "$url" | tail -n 1)
+    nix hash convert --hash-algo sha256 --to sri "$nar_hash"
+  else
+    # ZIP: unpack and hash
+    local unpack_dir
+    archive_path=$(nix-prefetch-url "$url" | tail -n 1)
+    archive_path="/nix/store/${archive_path}-$(basename "$url")"
+    unpack_dir=$(mktemp -d)
+    unzip -q "$archive_path" -d "$unpack_dir"
+    nix hash path "$unpack_dir"
+    rm -rf "$unpack_dir"
+  fi
 }
 
 refresh_pnpm_hash() {
@@ -151,11 +160,11 @@ select_release() {
 
   app_url=$(printf '%s' "$selected_release" | jq -r '
     [.assets[]
-      | select(.name | (test("^OpenClaw-.*\\.zip$") and (test("dSYM") | not)))
+      | select(.name | (test("^OpenClaw-.*\\.(zip|dmg)$") and (test("dSYM") | not)))
       | .browser_download_url][0] // empty
   ')
   if [[ -z "$app_url" ]]; then
-    echo "Latest stable OpenClaw release ${release_tag} is missing the required macOS zip asset" >&2
+    echo "Latest stable OpenClaw release ${release_tag} is missing the required macOS zip/dmg asset" >&2
     exit 1
   fi
 
@@ -195,7 +204,7 @@ apply_release() {
     exit 1
   fi
 
-  app_hash=$(unpacked_zip_hash "$app_url")
+  app_hash=$(app_asset_hash "$app_url")
   if [[ -z "$app_hash" ]]; then
     echo "Failed to resolve app hash for $release_tag" >&2
     exit 1
@@ -222,8 +231,8 @@ apply_release() {
   perl -0pi -e 's|pnpmDepsHash = "[^"]*";|pnpmDepsHash = "";|' "$source_file"
 
   perl -0pi -e "s|version = \"[^\"]+\";|version = \"${release_version}\";|" "$app_file"
-  perl -0pi -e "s|url = \"[^\"]+\";|url = \"${app_url}\";|" "$app_file"
-  perl -0pi -e "s|hash = \"[^\"]+\";|hash = \"${app_hash}\";|" "$app_file"
+  perl -0pi -e "s|app_url = \"[^\"]+\";|app_url = \"${app_url}\";|" "$app_file"
+  perl -0pi -e "s|app_hash = \"[^\"]+\";|app_hash = \"${app_hash}\";|" "$app_file"
 
   refresh_pnpm_hash
   regenerate_config_options "$selected_sha" "$source_store_path"
