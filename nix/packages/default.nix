@@ -16,7 +16,7 @@ let
     inherit sourceInfo;
     pnpmDepsHash = sourceInfo.pnpmDepsHash or null;
   };
-  openclawApp = null; # Disabled: upstream ships APFS DMGs which nixpkgs undmg can't extract
+  openclawApp = if isDarwin then pkgs.callPackage ./openclaw-app.nix { } else null;
   openclawTools = pkgs.buildEnv {
     name = "openclaw-tools";
     paths = toolSets.tools;

@@ -2,27 +2,45 @@
   lib,
   stdenvNoCC,
   fetchurl,
+  p7zip,
 }:
 
-# Placeholder — upstream switched to APFS DMGs which nixpkgs' undmg can't extract.
-# Keep the package name available so callPackage resolves, but it won't build.
+let
+  app_url = "https://github.com/openclaw/openclaw/releases/download/v2026.5.2/OpenClaw-2026.5.2.dmg";
+  app_hash = "sha256-lH06NxMmwc53GB1N28Pjx+p5cDMUDY5f//bp2YO2urc=";
+in
 stdenvNoCC.mkDerivation {
   pname = "openclaw-app";
   version = "2026.5.2";
 
   src = fetchurl {
-    url = "https://github.com/openclaw/openclaw/releases/download/v2026.5.2/OpenClaw-2026.5.2.dmg";
-    hash = "sha256-lH06NxMmwc53GB1N28Pjx+p5cDMUDY5f//bp2YO2urc=";
+    url = app_url;
+    hash = app_hash;
   };
 
-  unpackPhase = "echo 'openclaw-app: skipped (APFS DMG not supported by undmg)';";
+  nativeBuildInputs = [ p7zip ];
+
+  unpackPhase = ''
+    runHook preUnpack
+    7z x "$src" -o_dmg
+    cd _dmg
+    runHook postUnpack
+  '';
+
   installPhase = ''
+    runHook preInstall
     mkdir -p "$out/Applications"
-    echo "openclaw-app placeholder — DMG extraction not supported" > "$out/Applications/README.txt"
+    app_path="$(find . -maxdepth 3 -name '*.app' -print -quit)"
+    if [ -z "$app_path" ]; then
+      echo "OpenClaw.app not found in DMG contents" >&2
+      exit 1
+    fi
+    cp -R "$app_path" "$out/Applications/OpenClaw.app"
+    runHook postInstall
   '';
 
   meta = with lib; {
-    description = "OpenClaw macOS app bundle (placeholder — APFS DMG not extractable)";
+    description = "OpenClaw macOS app bundle";
     homepage = "https://github.com/openclaw/openclaw";
     license = licenses.mit;
     platforms = platforms.darwin;
