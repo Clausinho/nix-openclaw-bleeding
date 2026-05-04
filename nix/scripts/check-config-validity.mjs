@@ -35,7 +35,7 @@ if (fs.existsSync(legacyValidationPath)) {
 
     // Newer gateway bundles often only export validateConfigObjectWithPlugins (aliased),
     // while still containing an internal validateConfigObject function.
-    if (!contents.includes("validateConfigObject") && !contents.includes("validateConfigObjectWithPlugins")) {
+    if (!contents.includes("validateConfigObject") && !contents.includes("validateConfigObjectWithPlugins") && !contents.includes("validateConfigObjectRaw")) {
       continue;
     }
 
@@ -57,6 +57,12 @@ if (fs.existsSync(legacyValidationPath)) {
       break;
     }
 
+    // Fall back to the raw validator (v2026.5.x bundles).
+    if (typeof candidateModule.validateConfigObjectRaw === "function") {
+      validateConfigObject = candidateModule.validateConfigObjectRaw;
+      break;
+    }
+
     // Handle minified alias exports.
     let match = contents.match(/validateConfigObject as ([A-Za-z0-9_$]+)/);
     if (match && typeof candidateModule[match[1]] === "function") {
@@ -65,6 +71,12 @@ if (fs.existsSync(legacyValidationPath)) {
     }
 
     match = contents.match(/validateConfigObjectWithPlugins as ([A-Za-z0-9_$]+)/);
+    if (match && typeof candidateModule[match[1]] === "function") {
+      validateConfigObject = candidateModule[match[1]];
+      break;
+    }
+
+    match = contents.match(/validateConfigObjectRaw as ([A-Za-z0-9_$]+)/);
     if (match && typeof candidateModule[match[1]] === "function") {
       validateConfigObject = candidateModule[match[1]];
       break;
