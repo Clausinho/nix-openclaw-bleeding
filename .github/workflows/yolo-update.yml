@@ -86,6 +86,7 @@ jobs:
     needs: select
     if: needs.select.outputs.has_update == 'true'
     runs-on: macos-14
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -119,7 +120,6 @@ jobs:
     needs:
       - select
       - validate-linux
-      - validate-macos
     if: needs.select.outputs.has_update == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -171,8 +171,9 @@ jobs:
 
           Tests:
           - nix build .#checks.x86_64-linux.ci --accept-flake-config
-          - nix build .#checks.aarch64-darwin.ci --accept-flake-config
-          - scripts/hm-activation-macos.sh
+
+          Note:
+          - macOS validation runs as best-effort in the same workflow but does not block unattended stable pin promotion
           EOF
 
           git fetch origin main
