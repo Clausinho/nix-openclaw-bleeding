@@ -1,4 +1,4 @@
-# Generated from upstream OpenClaw schema at rev e085fa1a3ffd32d0ea6917e1e6fb4ecbffbb77d2. DO NOT EDIT.
+# Generated from upstream OpenClaw schema at rev 2d2ddc43d0dcf71f31283d780f9fe9ff4cc04fe4. DO NOT EDIT.
 # Generator: nix/scripts/generate-config-options.ts
 { lib }:
 let
@@ -1647,7 +1647,7 @@ in
         default = null;
       };
       thinkingDefault = lib.mkOption {
-        type = t.nullOr (t.oneOf [ (t.enum [ "off" ]) (t.enum [ "minimal" ]) (t.enum [ "low" ]) (t.enum [ "medium" ]) (t.enum [ "high" ]) (t.enum [ "xhigh" ]) (t.enum [ "adaptive" ]) (t.enum [ "max" ]) ]);
+        type = t.nullOr (t.oneOf [ (t.enum [ "off" ]) (t.enum [ "minimal" ]) (t.enum [ "low" ]) (t.enum [ "medium" ]) (t.enum [ "high" ]) (t.enum [ "xhigh" ]) (t.enum [ "adaptive" ]) (t.enum [ "max" ]) (t.enum [ "ultra" ]) ]);
         default = null;
       };
       timeFormat = lib.mkOption {
@@ -1671,6 +1671,10 @@ in
         default = null;
       };
       userTimezone = lib.mkOption {
+        type = t.nullOr (t.str);
+        default = null;
+      };
+      utilityModel = lib.mkOption {
         type = t.nullOr (t.str);
         default = null;
       };
@@ -2713,7 +2717,7 @@ in
         default = null;
       };
       thinkingDefault = lib.mkOption {
-        type = t.nullOr (t.enum [ "off" "minimal" "low" "medium" "high" "xhigh" "adaptive" "max" ]);
+        type = t.nullOr (t.enum [ "off" "minimal" "low" "medium" "high" "xhigh" "adaptive" "max" "ultra" ]);
         default = null;
       };
       toolProgressDetail = lib.mkOption {
@@ -3287,6 +3291,10 @@ in
       }; });
         default = null;
       };
+      utilityModel = lib.mkOption {
+        type = t.nullOr (t.str);
+        default = null;
+      };
       verboseDefault = lib.mkOption {
         type = t.nullOr (t.enum [ "off" "on" "full" ]);
         default = null;
@@ -3400,6 +3408,16 @@ in
         default = null;
       };
     }; });
+      default = null;
+    };
+  }; });
+    default = null;
+  };
+
+  audit = lib.mkOption {
+    type = t.nullOr (t.submodule { options = {
+    enabled = lib.mkOption {
+      type = t.nullOr (t.bool);
       default = null;
     };
   }; });
@@ -3688,7 +3706,7 @@ in
         type = t.str;
       };
       driver = lib.mkOption {
-        type = t.nullOr (t.oneOf [ (t.enum [ "openclaw" ]) (t.enum [ "clawd" ]) (t.enum [ "existing-session" ]) ]);
+        type = t.nullOr (t.oneOf [ (t.enum [ "openclaw" ]) (t.enum [ "clawd" ]) (t.enum [ "existing-session" ]) (t.enum [ "extension" ]) ]);
         default = null;
       };
       executablePath = lib.mkOption {
@@ -4070,6 +4088,19 @@ in
     };
     store = lib.mkOption {
       type = t.nullOr (t.str);
+      default = null;
+    };
+    triggers = lib.mkOption {
+      type = t.nullOr (t.submodule { options = {
+      enabled = lib.mkOption {
+        type = t.nullOr (t.bool);
+        default = null;
+      };
+      minIntervalMs = lib.mkOption {
+        type = t.nullOr (t.int);
+        default = null;
+      };
+    }; });
       default = null;
     };
     webhook = lib.mkOption {
@@ -4719,6 +4750,10 @@ in
         type = t.nullOr (t.int);
         default = null;
       };
+      sshHostKeyPolicy = lib.mkOption {
+        type = t.nullOr (t.oneOf [ (t.enum [ "strict" ]) (t.enum [ "openssh" ]) ]);
+        default = null;
+      };
       sshIdentity = lib.mkOption {
         type = t.nullOr (t.str);
         default = null;
@@ -4771,6 +4806,23 @@ in
         default = null;
       };
       serviceName = lib.mkOption {
+        type = t.nullOr (t.str);
+        default = null;
+      };
+    }; });
+      default = null;
+    };
+    terminal = lib.mkOption {
+      type = t.nullOr (t.submodule { options = {
+      detachedSessionTimeoutSeconds = lib.mkOption {
+        type = t.nullOr (t.int);
+        default = null;
+      };
+      enabled = lib.mkOption {
+        type = t.nullOr (t.bool);
+        default = null;
+      };
+      shell = lib.mkOption {
         type = t.nullOr (t.str);
         default = null;
       };
@@ -4986,6 +5038,38 @@ in
         };
         clawhubPackage = lib.mkOption {
           type = t.nullOr (t.str);
+          default = null;
+        };
+        clawhubTrustAcknowledgedAt = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        clawhubTrustCheckedAt = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        clawhubTrustDisposition = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "clean" ]) (t.enum [ "review-recommended" ]) (t.enum [ "review-required" ]) (t.enum [ "blocked" ]) ]);
+          default = null;
+        };
+        clawhubTrustModerationState = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        clawhubTrustPending = lib.mkOption {
+          type = t.nullOr (t.bool);
+          default = null;
+        };
+        clawhubTrustReasons = lib.mkOption {
+          type = t.nullOr (t.listOf (t.str));
+          default = null;
+        };
+        clawhubTrustScanStatus = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        clawhubTrustStale = lib.mkOption {
+          type = t.nullOr (t.bool);
           default = null;
         };
         clawhubUrl = lib.mkOption {
@@ -5240,6 +5324,44 @@ in
     };
     redactSensitive = lib.mkOption {
       type = t.nullOr (t.oneOf [ (t.enum [ "off" ]) (t.enum [ "tools" ]) ]);
+      default = null;
+    };
+  }; });
+    default = null;
+  };
+
+  marketplaces = lib.mkOption {
+    type = t.nullOr (t.submodule { options = {
+    feeds = lib.mkOption {
+      type = t.nullOr (t.attrsOf (t.submodule { options = {
+      url = lib.mkOption {
+        type = t.str;
+      };
+      verification = lib.mkOption {
+        type = t.nullOr (t.submodule { options = {
+        mode = lib.mkOption {
+          type = t.enum [ "unsigned" ];
+        };
+      }; });
+        default = null;
+      };
+    }; }));
+      default = null;
+    };
+    sources = lib.mkOption {
+      type = t.nullOr (t.attrsOf (t.oneOf [ (t.submodule { options = {
+      type = lib.mkOption {
+        type = t.enum [ "npm" ];
+      };
+    }; }) (t.submodule { options = {
+      type = lib.mkOption {
+        type = t.enum [ "clawhub" ];
+      };
+    }; }) (t.submodule { options = {
+      type = lib.mkOption {
+        type = t.enum [ "git" ];
+      };
+    }; }) ]));
       default = null;
     };
   }; });
@@ -5741,6 +5863,10 @@ in
       type = t.nullOr (t.str);
       default = null;
     };
+    responseUsage = lib.mkOption {
+      type = t.nullOr (t.oneOf [ (t.enum [ "on" "off" "tokens" "full" ]) (t.attrsOf (t.enum [ "on" "off" "tokens" "full" ])) ]);
+      default = null;
+    };
     statusReactions = lib.mkOption {
       type = t.nullOr (t.submodule { options = {
       emojis = lib.mkOption {
@@ -5770,6 +5896,10 @@ in
           default = null;
         };
         error = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        queued = lib.mkOption {
           type = t.nullOr (t.str);
           default = null;
         };
@@ -6232,6 +6362,10 @@ in
             default = null;
           };
           supportsStrictMode = lib.mkOption {
+            type = t.nullOr (t.bool);
+            default = null;
+          };
+          supportsTemperature = lib.mkOption {
             type = t.nullOr (t.bool);
             default = null;
           };
@@ -7523,7 +7657,7 @@ in
       default = null;
     };
     consultThinkingLevel = lib.mkOption {
-      type = t.nullOr (t.enum [ "off" "minimal" "low" "medium" "high" "xhigh" "adaptive" "max" ]);
+      type = t.nullOr (t.enum [ "off" "minimal" "low" "medium" "high" "xhigh" "adaptive" "max" "ultra" ]);
       default = null;
     };
     interruptOnSpeech = lib.mkOption {
@@ -7575,6 +7709,10 @@ in
         type = t.nullOr (t.str);
         default = null;
       };
+      prefixPaddingMs = lib.mkOption {
+        type = t.nullOr (t.int);
+        default = null;
+      };
       provider = lib.mkOption {
         type = t.nullOr (t.str);
         default = null;
@@ -7598,6 +7736,14 @@ in
       }; }));
         default = null;
       };
+      reasoningEffort = lib.mkOption {
+        type = t.nullOr (t.str);
+        default = null;
+      };
+      silenceDurationMs = lib.mkOption {
+        type = t.nullOr (t.int);
+        default = null;
+      };
       speakerVoice = lib.mkOption {
         type = t.nullOr (t.str);
         default = null;
@@ -7608,6 +7754,10 @@ in
       };
       transport = lib.mkOption {
         type = t.nullOr (t.enum [ "webrtc" "provider-websocket" "gateway-relay" "managed-room" ]);
+        default = null;
+      };
+      vadThreshold = lib.mkOption {
+        type = t.nullOr (t.number);
         default = null;
       };
       voice = lib.mkOption {
@@ -11268,7 +11418,7 @@ in
       default = null;
     };
     channel = lib.mkOption {
-      type = t.nullOr (t.oneOf [ (t.enum [ "stable" ]) (t.enum [ "beta" ]) (t.enum [ "dev" ]) ]);
+      type = t.nullOr (t.oneOf [ (t.enum [ "stable" ]) (t.enum [ "extended-stable" ]) (t.enum [ "beta" ]) (t.enum [ "dev" ]) ]);
       default = null;
     };
     checkOnStart = lib.mkOption {
@@ -11354,6 +11504,10 @@ in
       default = null;
     };
     lastRunVersion = lib.mkOption {
+      type = t.nullOr (t.str);
+      default = null;
+    };
+    securityAcknowledgedAt = lib.mkOption {
       type = t.nullOr (t.str);
       default = null;
     };
