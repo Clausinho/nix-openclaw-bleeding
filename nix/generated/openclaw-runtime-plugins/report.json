@@ -1,9 +1,9 @@
 {
-  "openclawVersion": "2026.7.1",
+  "openclawVersion": "2026.7.1-2",
   "runtimePluginVersion": "2026.7.1",
-  "openclawReleaseTag": "v2026.7.1",
-  "openclawRev": "2d2ddc43d0dcf71f31283d780f9fe9ff4cc04fe4",
-  "openclawHash": "sha256-37LZ10P+XGzfU3KVpRhfEElYscoUlE+zi85hmvicjLI=",
+  "openclawReleaseTag": "v2026.7.1-2",
+  "openclawRev": "0790d9f593ad30c940ed93b5872a8cf6d6f3cf8c",
+  "openclawHash": "sha256-kpiKCTjXX4l525IJDNsnI7j2IT6ZYdqvFTyRlKGgomg=",
   "catalogFiles": [
     "official-external-channel-catalog.json",
     "official-external-plugin-catalog.json",
