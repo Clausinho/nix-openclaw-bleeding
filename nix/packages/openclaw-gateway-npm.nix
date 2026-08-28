@@ -13,7 +13,7 @@ let
     nodejs = nodejs_22;
   };
   wrapperSrc = ../npm/openclaw;
-  lock = builtins.fromJSON (builtins.readFile "${wrapperSrc}/package-lock.json");
+  lock = builtins.fromJSON (builtins.readFile (wrapperSrc + "/package-lock.json"));
   lockedVersion = lock.packages."node_modules/openclaw".version or null;
 in
 
